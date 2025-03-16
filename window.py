@@ -1,6 +1,8 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 import math
+import numpy
+import librosa
 
 # pygame setup
 pygame.init()
@@ -19,7 +21,7 @@ while running:
     screen.fill("purple")
 
     # RENDER YOUR GAME HERE
-    screen.set_at(), "Black"
+    
     # flip() the display to put your work on screen
     pygame.display.flip()
 
