@@ -3,19 +3,22 @@ import pygame
 import math
 import numpy as np
 import librosa as lb
-import audio_utils as u
+import wave_display as wvdsp
 
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1025, 577))
+pygame.mixer.init(frequency=44100)
+screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 
-y, sr = lb.load('./audio_file/human_133.mp3', sr=48000)
-cp_m = lb.stft(y)
-
-stft_idx = 0
+filename = './audio_file/human_133.mp3' 
+wv = wvdsp.WaveDisplay(filename, sr=44100)
+wv.get_ft(n_fft=2940)
+song = pygame.mixer.Sound(filename)
+waveform = pygame.sndarray.array(song)
+# song.play()
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -24,15 +27,17 @@ while running:
             running = False
 
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
+    screen.fill("black")
 
-    # RENDER YOUR GAME HERE
-    current_stft_frame = cp_m[:, stft_idx]
-    points = list(zip(np.arange(screen.get_width()), np.clip(np.abs(current_stft_frame), a_min=0, a_max=screen.get_height())))
-    pygame.draw.lines(screen, "black", False, points)
+    points = wv.get_ft_frame(screen.get_width(), screen.get_height())
+    inv_points = [(screen.get_width()-x, screen.get_height()-y) for x, y in points]
+    pygame.draw.lines(screen, "#00f7ff", False, points)
+    pygame.draw.lines(screen, "#00f7ff", False, inv_points)
+
+
     # flip() the display to put your work on screen
     pygame.display.flip()
-    stft_idx += 1
+    wv.update()
     clock.tick(60)  # limits FPS to 60
     
 
